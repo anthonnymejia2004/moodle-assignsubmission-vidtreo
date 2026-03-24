@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<libraries>
+  <library>
+    <name>@vidtreo/recorder-wc</name>
+    <location>https://cdn.vidtreo.com/recorder/latest/vidtreo-recorder.js</location>
+    <version>latest</version>
+    <license>MIT</license>
+    <licenseversion>MIT</licenseversion>
+  </library>
+  <library>
+    <name>@vidtreo/player-wc</name>
+    <location>https://cdn.jsdelivr.net/npm/@vidtreo/player-wc@latest/dist/vidtreo-player.js</location>
+    <version>latest</version>
+    <license>MIT</license>
+    <licenseversion>MIT</licenseversion>
+  </library>
+</libraries>
