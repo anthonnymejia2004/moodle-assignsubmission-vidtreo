@@ -1,89 +1,181 @@
-# assignsubmission_vidtreo
+# 🎬 VIDTREO for Moodle
 
-![VIDTREO logo](./logo-black-vertical.png)
+![VIDTREO + Moodle](./assets/banner-v3b.png)
 
-`assignsubmission_vidtreo` brings VIDTREO Recorder and VIDTREO Player into Moodle assignments.
+**Video recording for Moodle assignments. Record, submit, grade — without leaving Moodle.**
 
-This plugin shows where the VIDTREO ecosystem is going: more real integrations, less friction, and better video workflows for edtech teams. Students record inside Moodle. Teachers review inside Moodle. Moodle keeps the submission context, and Vidtreo handles the video infrastructure behind it.
+Students record video directly inside assignment submissions using VIDTREO Recorder. Teachers review recordings with VIDTREO Player in the grading view. Moodle handles the academic context. VIDTREO handles the video infrastructure.
 
-## What this plugin does
+No file uploads. No plugins to install on student devices. No downloads. Just click record.
 
-- Adds VIDTREO Recorder to the Moodle assignment submission form
-- Lets students record and upload a video from the assignment page
-- Saves submission metadata in Moodle
-- Lets teachers play the submitted recording with VIDTREO Player inside the grading view
+---
 
-## Student flow
+## ⚡ What it does
 
-1. A student opens an assignment with the Vidtreo submission plugin enabled.
-2. Moodle renders the recorder area inside the submission form.
-3. The student records a video with VIDTREO Recorder.
-4. The recording is uploaded through VIDTREO Edge API.
-5. Hidden form fields store the recording metadata.
-6. When the student submits the assignment, Moodle saves the metadata and links it to the submission.
+- 🎥 **VIDTREO Recorder** embedded in the assignment submission form
+- ▶️ **VIDTREO Player** embedded in the teacher's grading view
+- 📱 Works on desktop and mobile browsers
+- 🌐 Multilingual UI (English, Spanish — more coming)
+- 🔒 GDPR-ready with full Moodle Privacy API implementation
+- 💾 Automatic backup/restore support for course migrations
 
-## Teacher flow
+---
 
-1. A teacher opens the assignment grading view.
-2. Moodle renders the player area for the saved submission.
-3. VIDTREO Player loads inside Moodle.
-4. The teacher can review playback without leaving the grading screen.
+## 🎓 How it works
 
-## How it works
+### Student submits a video
 
-At a high level, the plugin follows this flow:
+```
+📝 Open assignment → 🎥 Record video → ☁️ Auto-upload → ✅ Submit
+```
 
-- `locallib.php` builds the submission form and grading output.
-- `templates/recorder.mustache` creates the recorder mount point.
-- `amd/src/recorder.js` loads the `vidtreo-recorder` web component and listens for upload events.
-- Hidden fields such as `vidtreo_recording_id`, `vidtreo_public_id`, `vidtreo_duration`, `vidtreo_status`, and `vidtreo_metadata` carry the result back into Moodle.
-- `locallib.php` saves that data into the `assignsubmission_vidtreo` table defined in `db/install.xml`.
-- `templates/player.mustache` and `amd/src/player.js` load the `vidtreo-player` web component for grading playback.
+1. Student opens an assignment with VIDTREO enabled
+2. VIDTREO Recorder appears inside the submission form
+3. Student records from camera or screen — with pause, mute, and device switching
+4. Video uploads automatically to VIDTREO Edge API (browser-native transcoding, no server relay)
+5. Student clicks submit — Moodle saves the recording reference
 
-Moodle stores the submission metadata and references. The video recording itself lives on Vidtreo infrastructure.
+### Teacher grades the video
 
-That split is important for edtech. Moodle stays focused on assignments, grading, and course context. VIDTREO handles capture and delivery.
+```
+📋 Open grading → ▶️ Watch video → ✏️ Grade
+```
 
-## Key files
+1. Teacher opens the submission in Moodle's grading view
+2. VIDTREO Player loads inline — no external tabs, no downloads
+3. Teacher watches, grades, and moves on
 
-- `locallib.php` — main submission plugin logic
-- `settings.php` — site-level plugin settings such as API key, backend URL, recorder CDN URL, player CDN URL, and recording options
-- `db/install.xml` — database table for submission metadata
-- `templates/recorder.mustache` — recorder UI mount point
-- `templates/player.mustache` — playback UI mount point
-- `amd/src/recorder.js` — recorder integration and hidden field updates
-- `amd/src/player.js` — grading playback integration
-- `classes/privacy/provider.php` — privacy metadata, export, and deletion hooks
+### Architecture split
 
-## Installation and setup
+Moodle stores **submission metadata** (recording ID, duration, status). VIDTREO stores **the actual video** on Cloudflare's global edge network. This keeps your Moodle server lean — no video files eating disk space.
 
-1. Copy this plugin into your Moodle assignment submission plugins directory as `mod/assign/submission/vidtreo`.
-2. Visit Moodle as an administrator to complete installation.
-3. Open the plugin settings and configure:
-   - VIDTREO API key
-   - Backend URL
-   - Recorder CDN URL
-   - Player CDN URL
-   - Maximum recording time
-   - Source switching and pause options
-4. In an assignment, enable the Vidtreo submission method.
+---
 
-The current plugin metadata in `version.php` declares:
+## 🚀 Installation
 
-- Component: `assignsubmission_vidtreo`
-- Release: `1.0.0`
-- Maturity: `MATURITY_STABLE`
+### Step 1: Install the plugin
 
-## Data and privacy
+Copy the plugin folder into your Moodle installation:
 
-The plugin stores submission metadata in Moodle, including the recording ID, public ID, duration, status, and metadata blob.
+```
+{moodle_root}/mod/assign/submission/vidtreo/
+```
 
-The privacy provider also declares that recordings are stored on the Vidtreo cloud platform. Deleting data from Moodle removes the Moodle-side records, while the video files remain on Vidtreo infrastructure unless managed there.
+Or upload the `.zip` file through **Site administration → Plugins → Install plugins**.
 
-## Open source license
+### Step 2: Complete setup
 
-This project is open source.
+1. Visit Moodle as admin — the installation wizard runs automatically
+2. Go to **Site administration → Plugins → Assignment submissions → VIDTREO Recorder**
+3. Configure your settings:
 
-Like the plugin source files, it uses the GNU General Public License, version 3 or later (GPL v3 or later).
+| Setting | Description | Default |
+|---------|-------------|---------|
+| 🔑 **API Key** | Your VIDTREO API key ([get one free](https://app.vidtreo.com)) | — |
+| 🌐 **Backend URL** | VIDTREO Edge API endpoint | `https://core.vidtreo.com` |
+| 📦 **Recorder CDN URL** | Web Component source | `https://cdn.vidtreo.com/recorder/latest/vidtreo-recorder.js` |
+| 📦 **Player CDN URL** | Player Web Component source | jsDelivr CDN |
+| ⏱️ **Max recording time** | Default limit in seconds | `300` (5 min) |
+| 🔄 **Source switching** | Allow camera ↔ screen toggle | ✅ Enabled |
+| ⏸️ **Pause** | Allow pause/resume during recording | ✅ Enabled |
 
-That means you can study it, modify it, and share it under the terms of the GPL.
+### Step 3: Enable on an assignment
+
+1. Create or edit an assignment
+2. Under **Submission types**, check **VIDTREO Recorder**
+3. Optionally override max recording time, source switching, and pause per assignment
+4. Save — students can now record video submissions
+
+---
+
+## 📁 Plugin structure
+
+```
+moodle-assignsubmission-vidtreo/
+├── version.php                  # v1.0.0 — Moodle 4.4+
+├── locallib.php                 # 🧠 Core plugin logic (recording + playback)
+├── settings.php                 # ⚙️ Admin settings (API key, URLs, defaults)
+├── lib.php                      # Moodle hooks
+├── styles.css                   # Plugin styles
+├── thirdpartylibs.xml           # External dependency declaration
+│
+├── amd/src/
+│   ├── recorder.js              # 🎥 Loads <vidtreo-recorder> Web Component
+│   └── player.js                # ▶️ Loads <vidtreo-player> Web Component
+│
+├── templates/
+│   ├── recorder.mustache        # Recorder mount point + hidden fields
+│   └── player.mustache          # Player mount point for grading
+│
+├── db/
+│   ├── install.xml              # Database schema (assignsubmission_vidtreo)
+│   └── access.php               # Capability definitions
+│
+├── classes/
+│   ├── event/                   # Moodle events (submission_created, submission_updated)
+│   └── privacy/
+│       └── provider.php         # 🔒 GDPR: metadata declaration, export, deletion
+│
+├── backup/moodle2/              # Course backup/restore support
+├── tests/                       # PHPUnit tests
+│
+└── lang/
+    ├── en/                      # 🇬🇧 English strings
+    └── es/                      # 🇪🇸 Spanish strings
+```
+
+---
+
+## 🔐 Data and privacy
+
+| What | Where | Details |
+|------|-------|---------|
+| Recording ID, duration, status | **Moodle database** | `assignsubmission_vidtreo` table |
+| Video files | **VIDTREO cloud** | Cloudflare R2 storage, encrypted at rest |
+| Privacy API | **Fully implemented** | Export and deletion hooks for GDPR compliance |
+
+The Privacy API declares the external system (VIDTREO cloud) and what data is sent. Deleting from Moodle removes Moodle-side records. Video files on VIDTREO infrastructure are managed through the [VIDTREO Dashboard](https://app.vidtreo.com).
+
+---
+
+## 🏗️ Part of the VIDTREO Platform
+
+This plugin is the first entry in VIDTREO's **integrations** product line — bringing video recording into the platforms where people already work.
+
+```
+VIDTREO Platform
+├── VIDTREO Recorder        → Capture (browser-native recording + transcoding)
+├── VIDTREO Edge API        → Process + Store + Manage (Cloudflare edge network)
+├── VIDTREO AI              → Understand (transcription, summaries, key moments)
+├── VIDTREO Player          → Deliver (playback component)
+│
+└── 🔌 VIDTREO Integrations → Connect
+    └── ✅ Moodle           → This plugin
+    └── 🔜 Canvas LMS
+    └── 🔜 Google Classroom
+    └── 🔜 WordPress
+```
+
+**Why integrations matter:** Video recording shouldn't require students or teachers to leave their LMS. The best video infrastructure is the one you don't notice — it just works where you already are.
+
+---
+
+## 🔧 Requirements
+
+- **Moodle 4.4+** (version 2024042200)
+- A **VIDTREO account** with an API key — [sign up free](https://app.vidtreo.com)
+- Modern browser: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+
+---
+
+## 📄 License
+
+GNU General Public License v3 or later (GPL-3.0-or-later).
+
+This plugin is open source. Study it, modify it, distribute it — under the terms of the GPL.
+
+The VIDTREO Recorder and Player Web Components loaded from CDN are proprietary and require a valid VIDTREO API key.
+
+---
+
+**Built by [VIDTREO](https://vidtreo.com)** · Video recording for the modern web · [$0.01/minute](https://vidtreo.com/pricing)
