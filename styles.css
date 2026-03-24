@@ -1,0 +1,88 @@
+/*
+ * This file is part of Moodle - http://moodle.org/
+ *
+ * Moodle is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Moodle is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.vidtreo-recorder-container {
+  position: relative;
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
+
+.vidtreo-recorder-mount {
+  display: block;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.vidtreo-upload-status {
+  position: relative;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+.vidtreo-upload-status .progress {
+  height: 1.5rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.vidtreo-upload-status .progress-bar {
+  background-color: #0d6efd;
+  height: 100%;
+}
+
+.vidtreo-player-container {
+  position: relative;
+  max-width: 100%;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+.vidtreo-submission-video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background-color: #000;
+  border-radius: 0.25rem;
+}
+
+.vidtreo-video-meta {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+@media (max-width: 576px) {
+  .vidtreo-recorder-container {
+    margin-bottom: 0.75rem;
+  }
+
+  .vidtreo-player-container {
+    padding: 0.75rem;
+  }
+
+  .vidtreo-upload-status .progress {
+    height: 1.25rem;
+  }
+}

@@ -1,0 +1,27 @@
+{{!
+    Context variables consumed by this template (from locallib.php:94-100):
+    - submission_id: Submission identifier (int)
+    - config_json: Stringified JSON with recorder config (string, already JSON encoded)
+    - existing_data: Stringified JSON with existing recording data or 'null' (string)
+    - has_existing: Boolean, true if there's an existing recording
+    - existing_duration: Duration of existing recording in seconds (int)
+}}
+
+<div class="vidtreo-recorder-container" data-region="vidtreo-recorder" id="vidtreo-recorder-{{submission_id}}" data-submission-id="{{submission_id}}" data-config="{{config_json}}" data-existing="{{existing_data}}">
+    {{#has_existing}}
+    <div class="vidtreo-existing-info" style="margin-bottom: 1rem; padding: 0.5rem; background-color: #e7f3ff; border-left: 4px solid #0d6efd;">
+        <p style="margin: 0; font-size: 0.875rem; color: #004085;">
+            Video already recorded: <strong>{{existing_duration}}s</strong>
+        </p>
+    </div>
+    {{/has_existing}}
+
+    <div class="vidtreo-recorder-mount"></div>
+
+    <div class="vidtreo-upload-status" style="display: none;">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+         <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6c757d;">Uploading...</p>
+    </div>
+</div>

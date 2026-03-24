@@ -1,0 +1,26 @@
+{{!
+  Moodle VIDTREO Plugin - Player Template
+  Grading view: displays the submitted recording using the @vidtreo/player-wc Web Component
+  Context variables consumed: submission_id, recording_id, duration, status, apikey, backendurl, player_cdnurl
+}}
+
+<div class="vidtreo-player-container" data-region="vidtreo-player" data-submission-id="{{submission_id}}" data-recording-id="{{recording_id}}" data-api-key="{{apikey}}" data-backend-url="{{backendurl}}" data-player-cdn-url="{{player_cdnurl}}">
+  <div class="vidtreo-player-mount">
+    <div class="vidtreo-loading">{{#str}}loading, core{{/str}}</div>
+    <noscript>
+      <p>{{#str}}noscript, core{{/str}}</p>
+    </noscript>
+  </div>
+  
+  {{#duration}}
+    <div class="vidtreo-video-meta">
+      <strong>Duration:</strong> {{duration}} seconds
+    </div>
+  {{/duration}}
+  
+  {{#status}}
+    <div class="vidtreo-video-meta">
+      <strong>Status:</strong> {{status}}
+    </div>
+  {{/status}}
+</div>
