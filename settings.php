@@ -46,7 +46,7 @@ if ($ADMIN->fulltree) {
         'assignsubmission_vidtreo/cdnurl',
         get_string('cdnurl', 'assignsubmission_vidtreo'),
         get_string('cdnurl_desc', 'assignsubmission_vidtreo'),
-        'https://cdn.vidtreo.com/recorder/latest/vidtreo-recorder.js',
+        'https://cdn.jsdelivr.net/npm/@vidtreo/recorder-wc@latest/dist/vidtreo-recorder.js',
         PARAM_URL
     ));
 

@@ -73,7 +73,7 @@ Or upload the `.zip` file through **Site administration → Plugins → Install 
 |---------|-------------|---------|
 | 🔑 **API Key** | Your VIDTREO API key ([get one free](https://app.vidtreo.com)) | — |
 | 🌐 **Backend URL** | VIDTREO Edge API endpoint | `https://core.vidtreo.com` |
-| 📦 **Recorder CDN URL** | Web Component source | `https://cdn.vidtreo.com/recorder/latest/vidtreo-recorder.js` |
+| 📦 **Recorder CDN URL** | Web Component source | `https://cdn.jsdelivr.net/npm/@vidtreo/recorder-wc@latest/dist/vidtreo-recorder.js` |
 | 📦 **Player CDN URL** | Player Web Component source | jsDelivr CDN |
 | ⏱️ **Max recording time** | Default limit in seconds | `300` (5 min) |
 | 🔄 **Source switching** | Allow camera ↔ screen toggle | ✅ Enabled |

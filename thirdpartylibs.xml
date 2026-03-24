@@ -2,7 +2,7 @@
 <libraries>
   <library>
     <name>@vidtreo/recorder-wc</name>
-    <location>https://cdn.vidtreo.com/recorder/latest/vidtreo-recorder.js</location>
+    <location>https://cdn.jsdelivr.net/npm/@vidtreo/recorder-wc@latest/dist/vidtreo-recorder.js</location>
     <version>latest</version>
     <license>MIT</license>
     <licenseversion>MIT</licenseversion>
