@@ -68,3 +68,9 @@ $string['privacy:externalsystem'] = 'Video recordings are stored on the Vidtreo 
 
 $string['player_cdnurl'] = 'Player CDN URL';
 $string['player_cdnurl_desc'] = 'The CDN URL for loading the Vidtreo Player web component script. Only change this if you need to use a specific version.';
+
+$string['autosave:saving'] = 'Saving...';
+$string['autosave:saved'] = 'Auto-saved successfully';
+$string['autosave:error'] = 'Auto-save failed: {$a}';
+$string['autosave:error_validation'] = 'Invalid recording data';
+$string['autosave:error_permission'] = 'You do not have permission to save';

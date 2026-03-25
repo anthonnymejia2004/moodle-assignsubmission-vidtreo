@@ -1,0 +1,22 @@
+FROM moodlehq/moodle-php-apache:8.3
+
+# Instalar git para clonar Moodle
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clonar Moodle 4.5 estable (shallow clone para que sea ligero)
+RUN git clone --depth 1 --branch MOODLE_405_STABLE \
+    https://github.com/moodle/moodle.git /tmp/moodle \
+    && cp -r /tmp/moodle/. /var/www/html/ \
+    && rm -rf /tmp/moodle
+
+# Crear directorio de datos
+RUN mkdir -p /var/www/moodledata && \
+    chown -R www-data:www-data /var/www/moodledata && \
+    chmod -R 777 /var/www/moodledata
+
+# Config de Moodle para el entorno Docker
+COPY docker-config.php /var/www/html/config.php
+RUN chown www-data:www-data /var/www/html/config.php
+
+EXPOSE 80

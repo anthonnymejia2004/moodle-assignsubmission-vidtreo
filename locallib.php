@@ -132,6 +132,7 @@ class assign_submission_vidtreo extends assign_submission_plugin {
             'enablePause' => (bool) $enablepause,
             'lang' => $widgetlang,
             'submissionId' => $submissionid,
+            'assignmentId' => $this->assignment->get_instance()->id,
         ];
 
         $existingdata = null;

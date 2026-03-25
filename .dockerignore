@@ -1,0 +1,7 @@
+.git
+.gitignore
+docker-compose.yml
+.dockerignore
+README.md
+assets/
+logo-black-vertical.png
