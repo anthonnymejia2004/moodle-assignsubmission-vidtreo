@@ -74,3 +74,5 @@ $string['autosave:saved'] = 'Auto-saved successfully';
 $string['autosave:error'] = 'Auto-save failed: {$a}';
 $string['autosave:error_validation'] = 'Invalid recording data';
 $string['autosave:error_permission'] = 'You do not have permission to save';
+
+$string['recording_completed'] = 'Video recording completed. You have already recorded a video for this assignment.';

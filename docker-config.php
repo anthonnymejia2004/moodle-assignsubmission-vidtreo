@@ -23,12 +23,12 @@ $CFG->directorypermissions = 0777;
 $CFG->phpunit_prefix = 'phpu_';
 $CFG->phpunit_dataroot = '/var/www/moodledata/phpu_moodledata';
 
-// Debug activado para desarrollo del plugin
-$CFG->debug = E_ALL | E_STRICT;
-$CFG->debugdisplay = 1;
-$CFG->debugstringids = 1;
-$CFG->perfdebug = 15;
-$CFG->debugpageinfo = 1;
+// Debug desactivado (cambiar a E_ALL | E_STRICT para desarrollo)
+$CFG->debug = 0;
+$CFG->debugdisplay = 0;
+$CFG->debugstringids = 0;
+$CFG->perfdebug = 0;
+$CFG->debugpageinfo = 0;
 
 // Configuración de MailHog para desarrollo
 $CFG->smtphosts = 'mailhog:1025';

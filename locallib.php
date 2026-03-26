@@ -145,12 +145,16 @@ class assign_submission_vidtreo extends assign_submission_plugin {
             ];
         }
 
+        // Obtener cadena localizada para mensaje de completado
+        $completionmessage = get_string('recording_completed', 'assignsubmission_vidtreo');
+
         $templatecontext = [
             'submission_id' => $submissionid,
             'config_json' => json_encode($config),
             'existing_data' => $existingdata ? json_encode($existingdata) : 'null',
             'has_existing' => !empty($existingrecording),
             'existing_duration' => $existingrecording ? $existingrecording->duration : 0,
+            'completion_message' => $completionmessage,
         ];
 
         $renderer = $PAGE->get_renderer('assignsubmission_vidtreo');

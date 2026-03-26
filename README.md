@@ -149,6 +149,27 @@ docker-compose down
 docker-compose down -v
 ```
 
+### 🐛 Herramientas de Debug
+
+El plugin incluye herramientas de diagnóstico en la carpeta `debug/`. Estas herramientas están deshabilitadas por defecto por seguridad.
+
+**Para habilitar las herramientas de debug:**
+
+1. Edita `debug/config.php`
+2. Cambia `VIDTREO_DEBUG_ENABLED` a `true`
+3. Accede a `http://localhost:8080/mod/assign/submission/vidtreo/debug/`
+
+**Herramientas disponibles:**
+- 🎥 Debug de visualización de videos en el calificador
+- 🔧 Verificación de configuración del plugin
+- 📊 Análisis de estructura de base de datos
+- 📧 Verificación de notificaciones y SMTP
+- 📝 Documentación de diagnóstico
+
+⚠️ **Importante:** Nunca habilites estas herramientas en producción. Solo para desarrollo local.
+
+Ver `debug/README.md` para más información.
+
 ---
 
 ## 📁 Plugin structure

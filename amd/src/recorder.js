@@ -4,6 +4,7 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
     var RECORDER_MOUNT_SELECTOR = '.vidtreo-recorder-mount';
     var UPLOAD_STATUS_SELECTOR = '.vidtreo-upload-status';
     var PROGRESS_BAR_SELECTOR = '.progress-bar';
+    var COMPLETION_MESSAGE_SELECTOR = '[data-region="vidtreo-completion-message"]';
     var FIELD_RECORDING_ID = 'vidtreo_recording_id';
     var FIELD_PUBLIC_ID = 'vidtreo_public_id';
     var FIELD_DURATION = 'vidtreo_duration';
@@ -89,6 +90,25 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
 
     var AUTOSAVE_STATUS_SELECTOR = '[data-region="vidtreo-autosave-status"]';
     var AUTOSAVE_MESSAGE_SELECTOR = '.vidtreo-autosave-message';
+
+    function disableRecorder(recorderElement) {
+        if (!recorderElement) {
+            return;
+        }
+        recorderElement.setAttribute('disabled', 'true');
+    }
+
+    function showCompletionMessage(container, message) {
+        var completionEl = container.querySelector(COMPLETION_MESSAGE_SELECTOR);
+        if (!completionEl) {
+            return;
+        }
+        var messageEl = completionEl.querySelector('.vidtreo-completion-text');
+        if (messageEl) {
+            messageEl.textContent = message;
+        }
+        completionEl.style.display = 'block';
+    }
 
     function showAutosaveStatus(container, message, color) {
         var statusEl = container.querySelector(AUTOSAVE_STATUS_SELECTOR);
@@ -234,6 +254,13 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
                 duration: duration,
                 metadata: detail.metadata
             }, 0);
+
+            // Después del autosave, deshabilitar grabador y mostrar mensaje de completado
+            setTimeout(function() {
+                disableRecorder(recorderElement);
+                var completionMessage = container.dataset.completionMessage || 'Recording completed';
+                showCompletionMessage(container, completionMessage);
+            }, 3500);
         });
 
         recorderElement.addEventListener('upload-progress', function(event) {
@@ -301,6 +328,14 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
         bindRecorderEvents(container, recorderElement, config);
         mountPoint.appendChild(recorderElement);
         populateExistingData(container);
+
+        // Si ya existe una grabación, deshabilitar y mostrar mensaje
+        var existingData = getExistingData(container);
+        if (existingData && existingData.recordingId) {
+            disableRecorder(recorderElement);
+            var completionMessage = container.dataset.completionMessage || 'Recording completed';
+            showCompletionMessage(container, completionMessage);
+        }
     }
 
     return {

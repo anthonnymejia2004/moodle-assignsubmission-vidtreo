@@ -35,6 +35,11 @@
   overflow: hidden;
 }
 
+/* Hide recorder when disabled */
+.vidtreo-recorder-mount vidtreo-recorder[disabled] {
+  display: none !important;
+}
+
 .vidtreo-upload-status {
   position: relative;
   margin-top: 0.5rem;
@@ -53,6 +58,93 @@
 .vidtreo-upload-status .progress-bar {
   background-color: #0d6efd;
   height: 100%;
+}
+
+/* Completion message styles - overlays the recorder box */
+.vidtreo-completion-message {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 2px solid #28a745;
+  border-radius: 0.25rem;
+  padding: 2rem;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.vidtreo-recorder-container {
+  position: relative;
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
+
+.vidtreo-completion-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 1rem;
+}
+
+.vidtreo-completion-message .fa-check-circle {
+  color: #28a745;
+  font-size: 4rem;
+  animation: checkPulse 0.5s ease-in-out;
+}
+
+.vidtreo-completion-text {
+  color: #155724;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  max-width: 600px;
+}
+
+@keyframes checkPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive text size */
+@media (max-width: 768px) {
+  .vidtreo-completion-text {
+    font-size: 1.25rem;
+  }
+  
+  .vidtreo-completion-message .fa-check-circle {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .vidtreo-completion-text {
+    font-size: 1.1rem;
+  }
+  
+  .vidtreo-completion-message .fa-check-circle {
+    font-size: 2.5rem;
+  }
+  
+  .vidtreo-completion-message {
+    padding: 1.5rem;
+    min-height: 150px;
+  }
 }
 
 /* ========================================

@@ -74,3 +74,5 @@ $string['autosave:saved'] = 'Guardado automáticamente';
 $string['autosave:error'] = 'Error al guardar automáticamente: {$a}';
 $string['autosave:error_validation'] = 'Datos de grabación inválidos';
 $string['autosave:error_permission'] = 'No tienes permiso para guardar';
+
+$string['recording_completed'] = 'Grabación de video completada. Ya has grabado un video para esta tarea.';
