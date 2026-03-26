@@ -84,7 +84,8 @@ define(['core/notification'], function(Notification) {
         }
 
         var playerElement = document.createElement(PLAYER_TAG_NAME);
-        playerElement.setAttribute('recording-id', recordingId);
+        // El Web Component de Vidtreo espera 'video-id' no 'recording-id'
+        playerElement.setAttribute('video-id', recordingId);
 
         if (apiKey) {
             playerElement.setAttribute('api-key', apiKey);

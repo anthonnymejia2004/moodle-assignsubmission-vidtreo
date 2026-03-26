@@ -6,7 +6,7 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
 
 # Volume root files
 .DocumentRevisions-V100
@@ -16,3 +16,46 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+### Archivos de debug y pruebas
+debug-*.php
+check-*.php
+test-*.php
+verify-*.php
+show-*.php
+enable-*.php
+
+### Documentación de desarrollo (no del plugin)
+*DIAGNOSTICO*.md
+*DEBUG*.md
+*INSTRUCCIONES*.md
+*PLAN*.md
+*ANALISIS*.md
+*VERIFICAR*.md
+*PROBLEMA*.md
+*SOLUCION*.md
+*RESUMEN*.md
+*CONFIGURAR*.md
+SOLUCION-CORS-VIDTREO.md
+CONFIGURAR-PROXY-LOCAL.md
+
+### Docker y desarrollo local
+docker-compose.yml
+Dockerfile.dev
+docker-config.php
+*.sh
+
+### Node.js (si usas proxy local)
+node_modules/
+package.json
+package-lock.json
+proxy-*.js
+
+### Backups
+backup/
+
+### Assets de desarrollo
+assets/banner-*.png
+
+### Kiro IDE
+.kiro/
