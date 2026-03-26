@@ -251,27 +251,64 @@ class assign_submission_vidtreo extends assign_submission_plugin {
     }
 
     public function view_summary(\stdClass $submission, &$showviewlink) {
+        global $PAGE;
+        
         $vidtreosubmission = $this->get_vidtreo_submission($submission->id);
 
-        // DEBUG: Agregar información visible en el resumen
-        $debug = '<div style="background: #d1ecf1; border: 2px solid #0c5460; padding: 10px; margin: 5px 0; font-size: 12px;">';
-        $debug .= '<strong>🔍 DEBUG view_summary()</strong><br>';
-        $debug .= 'Submission ID: ' . $submission->id . '<br>';
-
         if (!$vidtreosubmission) {
-            $debug .= 'Status: NO SUBMISSION<br>';
-            $debug .= '</div>';
-            return $debug . get_string('nosubmission', 'assignsubmission_vidtreo');
+            return get_string('nosubmission', 'assignsubmission_vidtreo');
         }
 
-        $debug .= 'Recording ID: ' . $vidtreosubmission->recording_id . '<br>';
-        $debug .= 'Duration: ' . ($vidtreosubmission->duration ?: 0) . 's<br>';
-        $debug .= 'Show view link: TRUE<br>';
-        $debug .= '</div>';
+        if (empty($vidtreosubmission->recording_id)) {
+            return get_string('nosubmission', 'assignsubmission_vidtreo');
+        }
 
-        $showviewlink = true;
-        $duration = $vidtreosubmission->duration ? $vidtreosubmission->duration : 0;
-        return $debug . get_string('recording_submitted', 'assignsubmission_vidtreo', $duration);
+        // Show the video player directly in the grading interface
+        $showviewlink = false;
+
+        $apikey = get_config('assignsubmission_vidtreo', 'apikey');
+        $backendurl = get_config('assignsubmission_vidtreo', 'backendurl');
+        $playercdnurl = get_config('assignsubmission_vidtreo', 'player_cdnurl');
+
+        if (empty($playercdnurl)) {
+            $playercdnurl = 'https://cdn.jsdelivr.net/npm/@vidtreo/player-wc@latest/dist/vidtreo-player.js';
+        }
+
+        if (empty($apikey)) {
+            return '<div class="alert alert-danger">' . 
+                   get_string('error:noapikey', 'assignsubmission_vidtreo') . 
+                   '</div>';
+        }
+
+        if (empty($backendurl)) {
+            return '<div class="alert alert-danger">' . 
+                   get_string('error:nobackendurl', 'assignsubmission_vidtreo') . 
+                   '</div>';
+        }
+
+        $templatecontext = [
+            'submission_id' => $submission->id,
+            'recording_id' => $vidtreosubmission->recording_id,
+            'duration' => $vidtreosubmission->duration ? $vidtreosubmission->duration : 0,
+            'status' => $vidtreosubmission->status,
+            'apikey' => $apikey,
+            'backendurl' => $backendurl,
+            'player_cdnurl' => $playercdnurl,
+        ];
+
+        $renderer = $PAGE->get_renderer('assignsubmission_vidtreo');
+        $output = $renderer->render_from_template(
+            'assignsubmission_vidtreo/player',
+            $templatecontext
+        );
+
+        $PAGE->requires->js_call_amd(
+            'assignsubmission_vidtreo/player',
+            'init',
+            [$submission->id, $playercdnurl]
+        );
+
+        return $output;
     }
 
     public function view(\stdClass $submission) {

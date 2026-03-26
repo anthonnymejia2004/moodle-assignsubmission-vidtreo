@@ -15,6 +15,10 @@
  * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* ========================================
+   RECORDER STYLES
+   ======================================== */
+
 .vidtreo-recorder-container {
   position: relative;
   max-width: 100%;
@@ -51,12 +55,38 @@
   height: 100%;
 }
 
+/* ========================================
+   PLAYER STYLES - GENERAL
+   ======================================== */
+
 .vidtreo-player-container {
   position: relative;
   max-width: 100%;
-  background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 0.25rem;
+  background-color: #000;
+  padding: 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.vidtreo-player-mount {
+  position: relative;
+  width: 100%;
+  background-color: #000;
+}
+
+.vidtreo-player-mount vidtreo-player {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.vidtreo-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #fff;
+  background-color: #000;
 }
 
 .vidtreo-submission-video {
@@ -68,21 +98,121 @@
 }
 
 .vidtreo-video-meta {
-  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.vidtreo-video-meta strong {
+  color: #fff;
+}
+
+/* ========================================
+   GRADING INTERFACE SPECIFIC STYLES
+   ======================================== */
+
+/* Make the video player larger in grading interface */
+.path-mod-assign .vidtreo-player-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 1rem 0 !important;
+  padding: 0 !important;
+  background-color: #000 !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+/* Set appropriate video height and position to hide top black bar */
+.path-mod-assign .vidtreo-player-mount {
+  width: 100% !important;
+  padding: 0 !important;
+  background-color: #000 !important;
+  position: relative !important;
+  min-height: 450px !important;
+  overflow: hidden !important;
+}
+
+.path-mod-assign .vidtreo-player-mount vidtreo-player {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  min-height: 450px !important;
+  position: relative !important;
+  top: -30px !important;
+  margin-bottom: -30px !important;
+}
+
+/* Ensure video metadata is visible */
+.path-mod-assign .vidtreo-video-meta {
+  padding: 0.75rem 1rem !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablets and smaller desktops */
+@media (max-width: 992px) {
+  .path-mod-assign .vidtreo-player-mount {
+    min-height: 250px;
+  }
+  
+  .path-mod-assign .vidtreo-player-mount vidtreo-player {
+    min-height: 300px;
+  }
+}
+
+/* Mobile devices */
 @media (max-width: 576px) {
   .vidtreo-recorder-container {
     margin-bottom: 0.75rem;
   }
 
   .vidtreo-player-container {
-    padding: 0.75rem;
+    margin: 1rem 0;
+    border-radius: 0.25rem;
   }
 
   .vidtreo-upload-status .progress {
     height: 1.25rem;
   }
+  
+  .path-mod-assign .vidtreo-player-mount {
+    min-height: 200px;
+  }
+  
+  .path-mod-assign .vidtreo-player-mount vidtreo-player {
+    min-height: 200px;
+  }
+  
+  .vidtreo-video-meta {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ========================================
+   THEME COMPATIBILITY
+   ======================================== */
+
+/* Boost theme compatibility */
+.theme-boost .vidtreo-player-container {
+  border-radius: 0.5rem;
+}
+
+/* Classic theme compatibility */
+.theme-classic .vidtreo-player-container {
+  border-radius: 0.25rem;
+}
+
+/* Ensure video works in all container contexts */
+.submissionstatustable .vidtreo-player-container,
+.submission-content .vidtreo-player-container,
+.assignsubmission_vidtreo .vidtreo-player-container {
+  max-width: 100%;
+  width: 100%;
 }
