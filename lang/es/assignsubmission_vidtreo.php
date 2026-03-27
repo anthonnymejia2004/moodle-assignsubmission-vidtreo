@@ -68,3 +68,11 @@ $string['privacy:externalsystem'] = 'Las grabaciones de video se almacenan en la
 
 $string['player_cdnurl'] = 'URL CDN del reproductor';
 $string['player_cdnurl_desc'] = 'La URL CDN para cargar el componente web del reproductor Vidtreo. Solo cambia esto si necesitas usar una version especifica.';
+
+$string['autosave:saving'] = 'Guardando...';
+$string['autosave:saved'] = 'Guardado automáticamente';
+$string['autosave:error'] = 'Error al guardar automáticamente: {$a}';
+$string['autosave:error_validation'] = 'Datos de grabación inválidos';
+$string['autosave:error_permission'] = 'No tienes permiso para guardar';
+
+$string['recording_completed'] = 'Grabación de video completada. Ya has grabado un video para esta tarea.';

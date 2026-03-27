@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for assignsubmission_vidtreo.
+ * Renderer for assignsubmission_vidtreo.
  *
  * @package    assignsubmission_vidtreo
  * @copyright  2024 Vidtreo <https://vidtreo.com>
@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026032310;
-$plugin->requires  = 2024042200;
-$plugin->component = 'assignsubmission_vidtreo';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.0';
+/**
+ * Renderer class for the Vidtreo submission plugin.
+ */
+class assignsubmission_vidtreo_renderer extends plugin_renderer_base {
+}

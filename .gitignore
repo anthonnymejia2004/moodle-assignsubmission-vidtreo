@@ -6,7 +6,7 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
 
 # Volume root files
 .DocumentRevisions-V100
@@ -16,3 +16,29 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+### Carpeta de debug (mantener solo config.php y README.md)
+debug/
+!debug/config.php
+!debug/README.md
+
+### Docker y desarrollo local
+docker-compose.yml
+Dockerfile.dev
+docker-config.php
+*.sh
+
+### Node.js (si usas proxy local)
+node_modules/
+package.json
+package-lock.json
+proxy-*.js
+
+### Backups
+backup/
+
+### Assets de desarrollo
+assets/banner-*.png
+
+### Kiro IDE
+.kiro/

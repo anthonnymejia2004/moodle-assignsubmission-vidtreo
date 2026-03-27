@@ -3,14 +3,14 @@
   <TABLES>
     <TABLE NAME="assignsubmission_vidtreo" COMMENT="Stores video recording submission data for VIDTREO Recorder">
       <FIELDS>
-        <FIELD NAME="id" TYPE="bigint" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Primary key" />
-        <FIELD NAME="assignment" TYPE="bigint" LENGTH="10" NOTNULL="true" COMMENT="Foreign key to assign.id" />
-        <FIELD NAME="submission" TYPE="bigint" LENGTH="10" NOTNULL="true" COMMENT="Foreign key to assign_submission.id" />
-        <FIELD NAME="recording_id" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" COMMENT="Vidtreo recording ID" />
-        <FIELD NAME="public_id" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" COMMENT="Vidtreo public ID for video streaming" />
-        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Video duration in seconds" />
-        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" COMMENT="Recording status: recording, uploading, complete, error" />
-        <FIELD NAME="metadata" TYPE="text" NOTNULL="false" COMMENT="JSON metadata blob containing user agent, source type, and other context" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Primary key" />
+        <FIELD NAME="assignment" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key to assign.id" />
+        <FIELD NAME="submission" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key to assign_submission.id" />
+        <FIELD NAME="recording_id" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Vidtreo recording ID" />
+        <FIELD NAME="public_id" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Vidtreo public ID for video streaming" />
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Video duration in seconds" />
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Recording status: recording, uploading, complete, error" />
+        <FIELD NAME="metadata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON metadata blob containing user agent, source type, and other context" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key" />
