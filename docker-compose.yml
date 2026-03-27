@@ -50,11 +50,7 @@ services:
       - ./amd:/var/www/html/mod/assign/submission/vidtreo/amd
       - ./backup:/var/www/html/mod/assign/submission/vidtreo/backup
       - ./tests:/var/www/html/mod/assign/submission/vidtreo/tests
-      - ./check-vidtreo-submissions.php:/var/www/html/mod/assign/submission/vidtreo/check-vidtreo-submissions.php
-      - ./show-database-structure.php:/var/www/html/mod/assign/submission/vidtreo/show-database-structure.php
-      - ./verify-plugin-config.php:/var/www/html/mod/assign/submission/vidtreo/verify-plugin-config.php
-      - ./debug-grader-page.php:/var/www/html/mod/assign/submission/vidtreo/debug-grader-page.php
-      - ./test-view-output.php:/var/www/html/mod/assign/submission/vidtreo/test-view-output.php
+      - ./debug:/var/www/html/mod/assign/submission/vidtreo/debug
       # Persistir moodledata
       - moodle_data:/var/www/moodledata
     ports:

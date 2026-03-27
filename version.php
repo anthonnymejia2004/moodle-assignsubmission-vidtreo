@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026032301;
+$plugin->version   = 2026032310;
 $plugin->requires  = 2024042200;
 $plugin->component = 'assignsubmission_vidtreo';
 $plugin->maturity  = MATURITY_STABLE;

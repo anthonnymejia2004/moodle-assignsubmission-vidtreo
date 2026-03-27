@@ -51,6 +51,7 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
     function setHiddenFieldValue(fieldName, value) {
         var field = document.querySelector('input[name="' + fieldName + '"]');
         if (!field) {
+            console.error('[Vidtreo] Hidden field NOT FOUND:', fieldName);
             return;
         }
 
@@ -60,6 +61,7 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
         }
 
         field.value = String(value);
+        console.log('[Vidtreo] Field set:', fieldName, '=', field.value);
     }
 
     function updateProgress(container, progressValue) {
@@ -145,6 +147,9 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
             status: 'complete',
             metadata: detail.metadata !== undefined ? JSON.stringify(detail.metadata) : ''
         };
+
+        // DEBUG: Log what we're sending to the server
+        console.log('[Vidtreo Debug] Sending to autosave:', JSON.stringify(args, null, 2));
 
         var request = Ajax.call([{
             methodname: 'assignsubmission_vidtreo_autosave_recording',
@@ -233,9 +238,20 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
     function bindRecorderEvents(container, recorderElement, config) {
         recorderElement.addEventListener('upload-complete', function(event) {
             var detail = event.detail || {};
-            var recordingId = detail.recordingId || detail.recording_id || '';
-            var publicId = detail.publicId || detail.public_id || '';
+            
+            // DEBUG: Log the complete event detail to diagnose the issue
+            console.log('[Vidtreo Debug] upload-complete event detail:', JSON.stringify(detail, null, 2));
+            
+            var recordingId = detail.recordingId || detail.recording_id || detail.id || '';
+            var publicId = detail.publicId || detail.public_id || detail.id || '';
             var duration = Math.round(detail.duration || 0);
+            
+            // DEBUG: Log extracted values
+            console.log('[Vidtreo Debug] Extracted values:', {
+                recordingId: recordingId,
+                publicId: publicId,
+                duration: duration
+            });
 
             setHiddenFieldValue(FIELD_RECORDING_ID, recordingId);
             setHiddenFieldValue(FIELD_PUBLIC_ID, publicId);
@@ -352,9 +368,49 @@ define(['core/notification', 'core/ajax'], function(Notification, Ajax) {
                     var submitButton = event.submitter || document.activeElement;
                     if (submitButton && submitButton.name === 'submitbutton') {
                         var recordingIdField = document.querySelector('input[name="' + FIELD_RECORDING_ID + '"]');
-                        if (recordingIdField && !recordingIdField.value) {
+                        var hasRecordingInField = recordingIdField && recordingIdField.value;
+
+                        // Also check data-existing on the container in case JS populated the
+                        // hidden fields asynchronously (e.g. CDN still loading when submit fires)
+                        var hasExistingRecording = false;
+                        var rawExisting = container.dataset.existing;
+                        if (rawExisting && rawExisting !== 'null') {
+                            try {
+                                var existingObj = JSON.parse(rawExisting);
+                                if (existingObj && existingObj.recordingId) {
+                                    hasExistingRecording = true;
+                                    // Ensure the hidden field is populated before submit
+                                    if (recordingIdField && !recordingIdField.value) {
+                                        recordingIdField.value = existingObj.recordingId;
+                                    }
+                                }
+                            } catch (e) {
+                                // ignore parse errors
+                            }
+                        }
+
+                        // Check if the completion message is currently visible to the user
+                        var completionMsgEl = container.querySelector(COMPLETION_MESSAGE_SELECTOR);
+                        var isCompletionVisible = completionMsgEl && completionMsgEl.style.display !== 'none';
+
+                        if (!hasRecordingInField && !hasExistingRecording && !isCompletionVisible) {
                             event.preventDefault();
                             showError(new Error('Please complete the recording before submitting'));
+                            return;
+                        }
+
+                        // Fallback guarantees the `id` parameter is sent (Course Module ID)
+                        // Some Moodle setups drop query parameters or experience layout issues.
+                        if (!form.querySelector('input[name="id"]')) {
+                            var urlParams = new URLSearchParams(window.location.search);
+                            var courseModuleId = urlParams.get('id');
+                            if (courseModuleId) {
+                                var idInput = document.createElement('input');
+                                idInput.type = 'hidden';
+                                idInput.name = 'id';
+                                idInput.value = courseModuleId;
+                                form.appendChild(idInput);
+                            }
                         }
                     }
                 });
