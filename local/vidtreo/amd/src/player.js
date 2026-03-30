@@ -1,0 +1,54 @@
+define([], function() {
+    var PLAYER_TAG_NAME = 'vidtreo-player';
+    var PLAYER_REGION_SELECTOR = '[data-region="vidtreo-player"]';
+    var PLAYER_MOUNT_SELECTOR = '.vidtreo-player-mount';
+
+    function loadPlayerScript(cdnUrl) {
+        return new Promise(function(resolve, reject) {
+            if (document.querySelector('script[data-vidtreo-player="true"]')) {
+                resolve();
+                return;
+            }
+            var script = document.createElement('script');
+            script.src = cdnUrl;
+            script.async = true;
+            script.dataset.vidtreoPlayer = 'true';
+            script.onload = resolve;
+            script.onerror = function() {
+                reject(new Error('Failed to load player script'));
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    return {
+        init: function(contextId, config) {
+            var selector = PLAYER_REGION_SELECTOR + '[id="vidtreo-player-' + contextId + '"]';
+            var container = document.querySelector(selector);
+            if (!container) {
+                return;
+            }
+
+            var recordingId = container.dataset.recordingId;
+            var playerCdnUrl = config.playerCdnUrl || container.dataset.playerCdnurl;
+
+            if (!recordingId || !playerCdnUrl) {
+                return;
+            }
+
+            loadPlayerScript(playerCdnUrl).then(function() {
+                var mountPoint = container.querySelector(PLAYER_MOUNT_SELECTOR);
+                if (!mountPoint) {
+                    return;
+                }
+                var playerElement = document.createElement(PLAYER_TAG_NAME);
+                playerElement.setAttribute('video-id', recordingId);
+                playerElement.setAttribute('api-key', config.apiKey);
+                playerElement.setAttribute('backend-url', config.backendUrl);
+                mountPoint.appendChild(playerElement);
+            }).catch(function(error) {
+                console.error('[Vidtreo Player] Failed to load:', error);
+            });
+        }
+    };
+});

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/vidtreo/db" VERSION="20260329" COMMENT="XMLDB file for Moodle local/vidtreo">
+  <TABLES>
+    <TABLE NAME="local_vidtreo_recordings" COMMENT="Stores shared video recording metadata for all Vidtreo subplugins">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Primary key"/>
+        <FIELD NAME="recording_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Vidtreo recording ID (unique)"/>
+        <FIELD NAME="public_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Vidtreo public ID for video streaming"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Video duration in seconds"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Recording status: pending, uploading, complete, error"/>
+        <FIELD NAME="metadata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON metadata blob"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to user.id"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp of creation"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp of last modification"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Foreign key to user"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="recording_id_idx" UNIQUE="true" FIELDS="recording_id" COMMENT="Unique index on recording_id"/>
+        <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid" COMMENT="Index on userid for user queries"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

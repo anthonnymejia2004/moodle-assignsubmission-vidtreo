@@ -1,0 +1,49 @@
+<style>
+.vidtreo-player-container {
+    position: relative;
+    max-width: 100%;
+    background-color: #000;
+    padding: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+.vidtreo-player-mount {
+    width: 100%;
+    padding: 0;
+    background-color: #000;
+    position: relative;
+    min-height: 450px;
+    overflow: hidden;
+}
+.vidtreo-player-mount vidtreo-player {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    min-height: 450px;
+    position: relative;
+    top: -30px;
+    margin-bottom: -30px;
+}
+.vidtreo-player-info {
+    padding: 0.75rem 1rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.vidtreo-player-info strong {
+    color: #fff;
+}
+</style>
+<div class="vidtreo-player-container"
+     data-region="vidtreo-player"
+     id="vidtreo-player-{{context_id}}"
+     data-recording-id="{{recording_id}}"
+     data-player-cdnurl="{{player_cdnurl}}">
+    <div class="vidtreo-player-mount"></div>
+    {{#duration}}
+    <div class="vidtreo-player-info">
+        <small class="text-muted">{{#str}}duration, local_vidtreo{{/str}}: {{duration}}s</small>
+    </div>
+    {{/duration}}
+</div>

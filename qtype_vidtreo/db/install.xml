@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/vidtreo/db" VERSION="20260329" COMMENT="XMLDB file for qtype_vidtreo">
+  <TABLES>
+    <TABLE NAME="question_vidtreo" COMMENT="Stores Vidtreo question type options per question">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Primary key"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to question.id"/>
+        <FIELD NAME="maxrecordingtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="300" SEQUENCE="false" COMMENT="Maximum recording time in seconds"/>
+        <FIELD NAME="instructions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Instructions shown to students before recording"/>
+        <FIELD NAME="enablesourceswitching" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether source switching is enabled (1=yes, 0=no)"/>
+        <FIELD NAME="enablepause" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether pause is enabled (1=yes, 0=no)"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key"/>
+        <KEY NAME="questionid_fk" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" COMMENT="Foreign key to question"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="questionid_idx" UNIQUE="true" FIELDS="questionid" COMMENT="Unique index on questionid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
