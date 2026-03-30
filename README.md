@@ -2,9 +2,9 @@
 
 ![VIDTREO + Moodle](./assets/banner-v3b.png)
 
-**Video recording for Moodle assignments. Record, submit, grade — without leaving Moodle.**
+**Video recording for Moodle — Assignments and Quizzes. Record, submit, grade — without leaving Moodle.**
 
-Students record video directly inside assignment submissions using VIDTREO Recorder. Teachers review recordings with VIDTREO Player in the grading view. Moodle handles the academic context. VIDTREO handles the video infrastructure.
+Students record video directly inside Moodle activities using VIDTREO Recorder. Teachers review recordings with VIDTREO Player in the grading view. Moodle handles the academic context. VIDTREO handles the video infrastructure.
 
 No file uploads. No plugins to install on student devices. No downloads. Just click record.
 
@@ -12,12 +12,16 @@ No file uploads. No plugins to install on student devices. No downloads. Just cl
 
 ## ⚡ What it does
 
-- 🎥 **VIDTREO Recorder** embedded in the assignment submission form
-- ▶️ **VIDTREO Player** embedded in the teacher's grading view
+- 🎥 **VIDTREO Recorder** embedded in Assignments and Quiz questions
+- ▶️ **VIDTREO Player** embedded in the teacher's grading view and quiz review
 - 📱 Works on desktop and mobile browsers
 - 🌐 Multilingual UI (English, Spanish — more coming)
 - 🔒 GDPR-ready with full Moodle Privacy API implementation
 - 💾 Automatic backup/restore support for course migrations
+- 🔌 Extensible subplugin architecture — add new modules without touching core
+- 🎬 **Quiz question type** — Students record video answers directly in quiz attempts
+- 👁️ **Video playback in quiz review** — Teachers can watch student videos when reviewing quiz attempts
+- 🎨 **Custom question icon** — Visual indicator for video recording questions in question bank
 
 ---
 
@@ -26,14 +30,14 @@ No file uploads. No plugins to install on student devices. No downloads. Just cl
 ### Student submits a video
 
 ```
-📝 Open assignment → 🎥 Record video → ☁️ Auto-upload → ✅ Submit
+📝 Open activity → 🎥 Record video → ☁️ Auto-upload → ✅ Submit
 ```
 
-1. Student opens an assignment with VIDTREO enabled
-2. VIDTREO Recorder appears inside the submission form
+1. Student opens an Assignment or Quiz question with VIDTREO enabled
+2. VIDTREO Recorder appears inside the activity form
 3. Student records from camera or screen — with pause, mute, and device switching
 4. Video uploads automatically to VIDTREO Edge API (browser-native transcoding, no server relay)
-5. Student clicks submit — Moodle saves the recording reference
+5. Student submits — Moodle saves the recording reference
 
 ### Teacher grades the video
 
@@ -51,40 +55,116 @@ Moodle stores **submission metadata** (recording ID, duration, status). VIDTREO 
 
 ---
 
+## 🏗️ Plugin Architecture
+
+This project consists of **three separate plugins** that work together:
+
+### 1. `assignsubmission_vidtreo` — Legacy Assignment Plugin
+The original plugin. Lives at `mod/assign/submission/vidtreo/`. Fully functional standalone for Assignment submissions.
+
+### 2. `qtype_vidtreo` — Quiz Question Type Plugin *(new)*
+A question type plugin that enables video recording questions in Moodle quizzes. Students record video answers directly in quiz attempts, and teachers can review them in the quiz review interface.
+
+**Key features:**
+- 🎥 Video recording directly in quiz questions
+- ▶️ Video playback in quiz review for teachers
+- 📝 Question text display with recording interface
+- ⚙️ Configurable recording settings (max time, pause, source switching)
+- 🎨 Custom icon in question bank
+- 🔒 Manual grading workflow (requires teacher review)
+
+### 3. `local_vidtreo` — Central Plugin + Subplugins
+A local plugin that provides shared infrastructure and extends VIDTREO to multiple modules via a subplugin system.
+
+```
+local/vidtreo/                          # Central plugin (shared code)
+├── classes/api_client.php              # Shared API client
+├── classes/privacy/provider.php        # Centralized GDPR (covers all subplugins)
+├── amd/src/recorder.js                 # Single recorder component
+├── amd/src/player.js                   # Single player component
+├── templates/recorder.mustache         # Shared recorder template
+├── templates/player.mustache           # Shared player template
+├── settings.php                        # Single config page (API Key, URLs, etc.)
+├── db/subplugins.php                   # Declares the subplugin system
+└── subplugins/
+    └── vidtreosubmission/              # Assignment subplugin (migrated)
+```
+
+---
+
 ## 🚀 Installation
 
-### Step 1: Install the plugin
-
-Copy the plugin folder into your Moodle installation:
+### Where each plugin goes in Moodle
 
 ```
-{moodle_root}/mod/assign/submission/vidtreo/
+{moodle_root}/
+├── mod/assign/submission/vidtreo/      ← assignsubmission_vidtreo (this repo root)
+├── question/type/vidtreo/              ← qtype_vidtreo (qtype_vidtreo/ folder of this repo)
+└── local/vidtreo/                      ← local_vidtreo (local/ folder of this repo)
+    └── subplugins/
+        └── vidtreosubmission/
 ```
 
-Or upload the `.zip` file through **Site administration → Plugins → Install plugins**.
+### Step 1: Install the plugins
+
+**Option A — Manual copy:**
+```bash
+# Legacy assignment plugin (already works standalone)
+cp -r . {moodle_root}/mod/assign/submission/vidtreo/
+
+# Quiz question type plugin
+cp -r ./qtype_vidtreo {moodle_root}/question/type/vidtreo
+
+# New central plugin with subplugins
+cp -r ./local/vidtreo {moodle_root}/local/vidtreo
+```
+
+**Option B — Upload ZIP** through **Site administration → Plugins → Install plugins**.
+
+⚠️ **Important:** Install all three plugins for full functionality. The quiz question type requires `local_vidtreo` for shared components.
 
 ### Step 2: Complete setup
 
-1. Visit Moodle as admin — the installation wizard runs automatically
-2. Go to **Site administration → Plugins → Assignment submissions → VIDTREO Recorder**
-3. Configure your settings:
+1. Visit Moodle as admin — the installation wizard runs automatically for both plugins
+2. Go to **Site administration → Plugins → Local plugins → Vidtreo**
+3. Configure your settings (one place, applies to all modules):
 
 | Setting | Description | Default |
 |---------|-------------|---------|
 | 🔑 **API Key** | Your VIDTREO API key ([get one free](https://app.vidtreo.com)) | — |
 | 🌐 **Backend URL** | VIDTREO Edge API endpoint | `https://core.vidtreo.com` |
-| 📦 **Recorder CDN URL** | Web Component source | `https://cdn.jsdelivr.net/npm/@vidtreo/recorder-wc@latest/dist/vidtreo-recorder.js` |
+| 📦 **Recorder CDN URL** | Recorder Web Component source | jsDelivr CDN |
 | 📦 **Player CDN URL** | Player Web Component source | jsDelivr CDN |
 | ⏱️ **Max recording time** | Default limit in seconds | `300` (5 min) |
 | 🔄 **Source switching** | Allow camera ↔ screen toggle | ✅ Enabled |
 | ⏸️ **Pause** | Allow pause/resume during recording | ✅ Enabled |
 
-### Step 3: Enable on an assignment
+### Step 3: Enable on activities
 
+**Assignments:**
 1. Create or edit an assignment
 2. Under **Submission types**, check **VIDTREO Recorder**
-3. Optionally override max recording time, source switching, and pause per assignment
-4. Save — students can now record video submissions
+3. Save — students can now record video submissions
+
+**Quiz:**
+1. Edit a quiz → Add question → Select **Grabación de video Vidtreo** (VIDTREO video recording) question type
+2. Configure the question:
+   - **Question name**: Internal identifier for the question bank
+   - **Question text**: The prompt students will see (e.g., "Explain the water cycle")
+   - **Instructions** (optional): Additional guidance for students
+   - **Max recording time**: Time limit in seconds (default: 300 = 5 minutes)
+   - **Enable source switching**: Allow students to switch between camera and screen
+   - **Enable pause**: Allow students to pause/resume recording
+3. Save the question
+4. Students will see the question text and recording interface when taking the quiz
+5. Teachers can watch the recorded videos in the quiz review interface at `/mod/quiz/review.php`
+
+**Grading video questions:**
+- Video questions require manual grading (they don't auto-grade)
+- Teachers access the grading interface from the quiz results page
+- The video player appears inline with the question text
+- Teachers can watch the video, add comments, and assign a grade
+- The video player uses optimized styling to hide unnecessary black bars and center the video properly
 
 ---
 
@@ -111,6 +191,37 @@ http://localhost:8025
 | **MariaDB** | 3307 | Base de datos |
 | **MailHog** | 8025 (web), 1025 (SMTP) | Servidor SMTP de prueba |
 
+### Volúmenes Docker
+
+El `docker-compose.yml` monta automáticamente ambos plugins:
+
+```yaml
+volumes:
+  # Plugin legacy de Assignment
+  - ./lib.php:/var/www/html/mod/assign/submission/vidtreo/lib.php
+  - ./locallib.php:/var/www/html/mod/assign/submission/vidtreo/locallib.php
+  # ... (resto de archivos del plugin legacy)
+
+  # Plugin central local_vidtreo con subplugins
+  - ./local/vidtreo:/var/www/html/local/vidtreo
+```
+
+### JavaScript en desarrollo
+
+Moodle en producción usa los archivos minificados de `amd/build/`. Para desarrollo sin compilar:
+
+```php
+// En config.php de Moodle (ya configurado en docker-config.php):
+$CFG->cachejs = false;
+```
+
+Para compilar para producción:
+```bash
+# Desde la raíz de Moodle
+grunt amd --root=local/vidtreo
+grunt amd --root=mod/assign/submission/vidtreo
+```
+
 ### MailHog - Servidor de email para desarrollo
 
 MailHog captura todos los emails enviados por Moodle sin enviarlos realmente. Perfecto para:
@@ -118,26 +229,14 @@ MailHog captura todos los emails enviados por Moodle sin enviarlos realmente. Pe
 - ✅ Probar notificaciones de entrega de tareas
 - ✅ Ver emails de confirmación a estudiantes
 - ✅ Verificar formato y contenido de mensajes
-- ✅ No necesita configuración SMTP real
 
 **Interfaz web:** http://localhost:8025
-
-### Configuración automática
-
-El archivo `docker-config.php` configura automáticamente:
-- Conexión a base de datos
-- Servidor SMTP (MailHog)
-- Modo debug para desarrollo
-- Dirección de email no-reply
 
 ### Comandos útiles
 
 ```bash
 # Ver logs de Moodle
 docker logs -f moodle_app
-
-# Ver logs de la base de datos
-docker logs -f moodle_db
 
 # Reiniciar servicios
 docker-compose restart
@@ -151,61 +250,90 @@ docker-compose down -v
 
 ### 🐛 Herramientas de Debug
 
-El plugin incluye herramientas de diagnóstico en la carpeta `debug/`. Estas herramientas están deshabilitadas por defecto por seguridad.
+El plugin incluye herramientas de diagnóstico en la carpeta `debug/`. Deshabilitadas por defecto.
 
-**Para habilitar las herramientas de debug:**
-
+**Para habilitar:**
 1. Edita `debug/config.php`
 2. Cambia `VIDTREO_DEBUG_ENABLED` a `true`
 3. Accede a `http://localhost:8080/mod/assign/submission/vidtreo/debug/`
 
-**Herramientas disponibles:**
-- 🎥 Debug de visualización de videos en el calificador
-- 🔧 Verificación de configuración del plugin
-- 📊 Análisis de estructura de base de datos
-- 📧 Verificación de notificaciones y SMTP
-- 📝 Documentación de diagnóstico
-
-⚠️ **Importante:** Nunca habilites estas herramientas en producción. Solo para desarrollo local.
-
-Ver `debug/README.md` para más información.
+⚠️ **Nunca habilites en producción.**
 
 ---
 
-## 📁 Plugin structure
+## 📁 Full project structure
 
 ```
-moodle-assignsubmission-vidtreo/
-├── version.php                  # v1.0.0 — Moodle 4.4+
-├── locallib.php                 # 🧠 Core plugin logic (recording + playback)
-├── settings.php                 # ⚙️ Admin settings (API key, URLs, defaults)
-├── lib.php                      # Moodle hooks
-├── styles.css                   # Plugin styles
-├── thirdpartylibs.xml           # External dependency declaration
+moodle-assignsubmission-vidtreo/        (este repositorio)
 │
+├── version.php                         # Plugin legacy: assignsubmission_vidtreo
+├── locallib.php
+├── settings.php
+├── lib.php
+├── renderer.php
+├── styles.css
 ├── amd/src/
-│   ├── recorder.js              # 🎥 Loads <vidtreo-recorder> Web Component
-│   └── player.js                # ▶️ Loads <vidtreo-player> Web Component
-│
+│   ├── recorder.js
+│   └── player.js
 ├── templates/
-│   ├── recorder.mustache        # Recorder mount point + hidden fields
-│   └── player.mustache          # Player mount point for grading
-│
 ├── db/
-│   ├── install.xml              # Database schema (assignsubmission_vidtreo)
-│   └── access.php               # Capability definitions
-│
 ├── classes/
-│   ├── event/                   # Moodle events (submission_created, submission_updated)
-│   └── privacy/
-│       └── provider.php         # 🔒 GDPR: metadata declaration, export, deletion
+├── backup/
+├── tests/
+├── lang/
+│   ├── en/
+│   └── es/
 │
-├── backup/moodle2/              # Course backup/restore support
-├── tests/                       # PHPUnit tests
+├── qtype_vidtreo/                      # Plugin nuevo: qtype_vidtreo (Quiz question type)
+│   ├── version.php
+│   ├── questiontype.php                # Question type definition
+│   ├── question.php                    # Question behavior
+│   ├── renderer.php                    # Question rendering (recorder + player)
+│   ├── edit_vidtreo_form.php           # Question editing form
+│   ├── pix/
+│   │   └── icon.svg                    # Question type icon (camera)
+│   ├── classes/
+│   │   ├── external/
+│   │   │   └── autosave_attempt.php    # Web service for autosave
+│   │   └── privacy/provider.php        # GDPR compliance
+│   ├── db/
+│   │   ├── install.xml                 # Database schema
+│   │   ├── access.php                  # Capabilities
+│   │   └── services.php                # Web services
+│   ├── lang/
+│   │   ├── en/qtype_vidtreo.php        # English strings
+│   │   └── es/qtype_vidtreo.php        # Spanish strings
+│   └── tests/
+│       ├── helper.php                  # Test helpers
+│       ├── quiz_recorder_initialization_test.php
+│       └── recorder_preservation_test.php
 │
-└── lang/
-    ├── en/                      # 🇬🇧 English strings
-    └── es/                      # 🇪🇸 Spanish strings
+└── local/vidtreo/                      # Plugin central: local_vidtreo
+    ├── version.php
+    ├── lib.php
+    ├── settings.php                    # ⚙️ Configuración global única
+    ├── amd/src/
+    │   ├── recorder.js                 # 🎥 Grabador compartido
+    │   └── player.js                   # ▶️ Reproductor compartido
+    ├── templates/
+    │   ├── recorder.mustache           # Template del grabador
+    │   └── player.mustache             # Template del reproductor (con estilos optimizados)
+    ├── classes/
+    │   ├── api_client.php              # 🔌 Cliente API compartido
+    │   └── privacy/provider.php        # 🔒 GDPR centralizado
+    ├── db/
+    │   ├── install.xml                 # Tabla local_vidtreo_recordings
+    │   ├── subplugins.php              # Declara el sistema de subplugins
+    │   ├── services.php                # Web service: autosave
+    │   └── upgrade.php                 # Migración de datos
+    ├── tests/
+    │   └── integration_test.php        # Tests de integración
+    └── subplugins/
+        └── vidtreosubmission/          # Subplugin: Assignments
+            ├── version.php
+            ├── locallib.php
+            ├── classes/
+            └── lang/
 ```
 
 ---
@@ -214,17 +342,33 @@ moodle-assignsubmission-vidtreo/
 
 | What | Where | Details |
 |------|-------|---------|
-| Recording ID, duration, status | **Moodle database** | `assignsubmission_vidtreo` table |
+| Assignment recording metadata | **Moodle DB** | `assignsubmission_vidtreo` table |
+| Quiz recording responses | **Moodle DB** | `question_attempt_step_data` (recording_id, public_id, duration, status) |
+| Shared recording index | **Moodle DB** | `local_vidtreo_recordings` table |
 | Video files | **VIDTREO cloud** | Cloudflare R2 storage, encrypted at rest |
-| Privacy API | **Fully implemented** | Export and deletion hooks for GDPR compliance |
+| Privacy API | **Fully implemented** | Centralized in `local_vidtreo` — covers all subplugins and qtype_vidtreo |
 
-The Privacy API declares the external system (VIDTREO cloud) and what data is sent. Deleting from Moodle removes Moodle-side records. Video files on VIDTREO infrastructure are managed through the [VIDTREO Dashboard](https://app.vidtreo.com).
+The Privacy API declares the external system (VIDTREO cloud) and what data is sent. Each subplugin delegates privacy operations to `local_vidtreo` via `null_provider`. The quiz question type (`qtype_vidtreo`) implements its own privacy provider that exports and deletes quiz attempt data.
+
+### Quiz question data storage
+
+When a student records a video answer in a quiz:
+1. The recording metadata is stored in Moodle's `question_attempt_step_data` table
+2. Fields stored: `recording_id`, `public_id`, `duration`, `status`
+3. The actual video file is stored in VIDTREO cloud
+4. Teachers can view the video in the quiz review interface using the stored `recording_id`
+
+---
+
+## 🔧 Requirements
+
+- **Moodle 4.2+** (version 2024042200)
+- A **VIDTREO account** with an API key — [sign up free](https://app.vidtreo.com)
+- Modern browser: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
 ---
 
 ## 🏗️ Part of the VIDTREO Platform
-
-This plugin is the first entry in VIDTREO's **integrations** product line — bringing video recording into the platforms where people already work.
 
 ```
 VIDTREO Platform
@@ -234,21 +378,11 @@ VIDTREO Platform
 ├── VIDTREO Player          → Deliver (playback component)
 │
 └── 🔌 VIDTREO Integrations → Connect
-    └── ✅ Moodle           → This plugin
+    └── ✅ Moodle           → This plugin (Assignments + Quiz)
     └── 🔜 Canvas LMS
     └── 🔜 Google Classroom
     └── 🔜 WordPress
 ```
-
-**Why integrations matter:** Video recording shouldn't require students or teachers to leave their LMS. The best video infrastructure is the one you don't notice — it just works where you already are.
-
----
-
-## 🔧 Requirements
-
-- **Moodle 4.4+** (version 2024042200)
-- A **VIDTREO account** with an API key — [sign up free](https://app.vidtreo.com)
-- Modern browser: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
 ---
 
