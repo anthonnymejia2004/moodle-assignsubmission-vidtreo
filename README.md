@@ -261,7 +261,91 @@ El plugin incluye herramientas de diagnóstico en la carpeta `debug/`. Deshabili
 
 ---
 
-## 📁 Full project structure
+## 🐳 Development with Docker
+
+### Quick start
+
+```bash
+# Levantar el entorno completo
+docker-compose up -d
+
+# Acceder a Moodle
+http://localhost:8080
+
+# Ver emails capturados (MailHog)
+http://localhost:8025
+```
+
+### Servicios incluidos
+
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| **Moodle** | 8080 | Aplicación principal |
+| **MariaDB** | 3307 | Base de datos |
+| **MailHog** | 8025 (web), 1025 (SMTP) | Servidor SMTP de prueba |
+
+### MailHog - Servidor de email para desarrollo
+
+MailHog captura todos los emails enviados por Moodle sin enviarlos realmente. Perfecto para:
+
+- ✅ Probar notificaciones de entrega de tareas
+- ✅ Ver emails de confirmación a estudiantes
+- ✅ Verificar formato y contenido de mensajes
+- ✅ No necesita configuración SMTP real
+
+**Interfaz web:** http://localhost:8025
+
+### Configuración automática
+
+El archivo `docker-config.php` configura automáticamente:
+- Conexión a base de datos
+- Servidor SMTP (MailHog)
+- Modo debug para desarrollo
+- Dirección de email no-reply
+
+### Comandos útiles
+
+```bash
+# Ver logs de Moodle
+docker logs -f moodle_app
+
+# Ver logs de la base de datos
+docker logs -f moodle_db
+
+# Reiniciar servicios
+docker-compose restart
+
+# Detener todo
+docker-compose down
+
+# Limpiar todo (incluyendo datos)
+docker-compose down -v
+```
+
+### 🐛 Herramientas de Debug
+
+El plugin incluye herramientas de diagnóstico en la carpeta `debug/`. Estas herramientas están deshabilitadas por defecto por seguridad.
+
+**Para habilitar las herramientas de debug:**
+
+1. Edita `debug/config.php`
+2. Cambia `VIDTREO_DEBUG_ENABLED` a `true`
+3. Accede a `http://localhost:8080/mod/assign/submission/vidtreo/debug/`
+
+**Herramientas disponibles:**
+- 🎥 Debug de visualización de videos en el calificador
+- 🔧 Verificación de configuración del plugin
+- 📊 Análisis de estructura de base de datos
+- 📧 Verificación de notificaciones y SMTP
+- 📝 Documentación de diagnóstico
+
+⚠️ **Importante:** Nunca habilites estas herramientas en producción. Solo para desarrollo local.
+
+Ver `debug/README.md` para más información.
+
+---
+
+## 📁 Plugin structure
 
 ```
 moodle-assignsubmission-vidtreo/        (este repositorio)
