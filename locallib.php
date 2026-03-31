@@ -94,12 +94,13 @@ class assign_submission_vidtreo extends assign_submission_plugin {
     public function get_form_elements($submission, \MoodleQuickForm $mform, \stdClass $data) {
         global $PAGE;
 
-        $apikey = get_config('assignsubmission_vidtreo', 'apikey');
-        $backendurl = get_config('assignsubmission_vidtreo', 'backendurl');
-        $cdnurl = get_config('assignsubmission_vidtreo', 'cdnurl');
-        $maxrecordingtime = get_config('assignsubmission_vidtreo', 'maxrecordingtime');
-        $enablesourceswitching = get_config('assignsubmission_vidtreo', 'enablesourceswitching');
-        $enablepause = get_config('assignsubmission_vidtreo', 'enablepause');
+        // Read config from local_vidtreo (shared with quiz module).
+        $apikey               = get_config('local_vidtreo', 'apikey');
+        $backendurl           = get_config('local_vidtreo', 'backendurl');
+        $cdnurl               = get_config('local_vidtreo', 'cdnurl');
+        $maxrecordingtime     = get_config('local_vidtreo', 'maxrecordingtime');
+        $enablesourceswitching = get_config('local_vidtreo', 'enablesourceswitching');
+        $enablepause          = get_config('local_vidtreo', 'enablepause');
 
         if (empty($apikey)) {
             $mform->addElement('static', 'vidtreo_error', '',
@@ -113,7 +114,7 @@ class assign_submission_vidtreo extends assign_submission_plugin {
             return true;
         }
 
-        $submissionid = $submission ? $submission->id : 0;
+        $submissionid    = $submission ? $submission->id : 0;
         $existingrecording = $this->get_vidtreo_submission($submissionid);
 
         $currentlang = current_language();
@@ -124,42 +125,40 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         $widgetlang = isset($langmap[$currentlang]) ? $langmap[$currentlang] : 'en';
 
         $config = [
-            'apiKey' => $apikey,
-            'backendUrl' => $backendurl,
-            'cdnUrl' => $cdnurl,
-            'maxRecordingTime' => (int) $maxrecordingtime,
+            'apiKey'               => $apikey,
+            'backendUrl'           => $backendurl,
+            'cdnUrl'               => $cdnurl,
+            'maxRecordingTime'     => (int) $maxrecordingtime,
             'enableSourceSwitching' => (bool) $enablesourceswitching,
-            'enablePause' => (bool) $enablepause,
-            'lang' => $widgetlang,
-            'submissionId' => $submissionid,
-            'assignmentId' => $this->assignment->get_instance()->id,
+            'enablePause'          => (bool) $enablepause,
+            'lang'                 => $widgetlang,
+            'contextId'            => $submissionid,
         ];
 
         $existingdata = null;
         if ($existingrecording) {
             $existingdata = [
                 'recordingId' => $existingrecording->recording_id,
-                'publicId' => $existingrecording->public_id,
-                'duration' => $existingrecording->duration,
-                'status' => $existingrecording->status,
+                'publicId'    => $existingrecording->public_id,
+                'duration'    => $existingrecording->duration,
+                'status'      => $existingrecording->status,
             ];
         }
 
-        // Obtener cadena localizada para mensaje de completado
         $completionmessage = get_string('recording_completed', 'assignsubmission_vidtreo');
 
         $templatecontext = [
-            'submission_id' => $submissionid,
-            'config_json' => json_encode($config),
-            'existing_data' => $existingdata ? json_encode($existingdata) : 'null',
-            'has_existing' => !empty($existingrecording),
+            'context_id'       => $submissionid,
+            'config_json'      => json_encode($config),
+            'existing_data'    => $existingdata ? json_encode($existingdata) : 'null',
+            'has_existing'     => !empty($existingrecording),
             'existing_duration' => $existingrecording ? $existingrecording->duration : 0,
             'completion_message' => $completionmessage,
         ];
 
-        $renderer = $PAGE->get_renderer('assignsubmission_vidtreo');
+        $renderer = $PAGE->get_renderer('core');
         $mform->addElement('html', $renderer->render_from_template(
-            'assignsubmission_vidtreo/recorder',
+            'local_vidtreo/recorder',
             $templatecontext
         ));
 
@@ -184,7 +183,7 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         $mform->setType('vidtreo_metadata', PARAM_RAW);
 
         $PAGE->requires->js_call_amd(
-            'assignsubmission_vidtreo/recorder',
+            'local_vidtreo/recorder',
             'init',
             [$submissionid, $config]
         );
@@ -259,20 +258,26 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         
         $vidtreosubmission = $this->get_vidtreo_submission($submission->id);
 
-        if (!$vidtreosubmission) {
-            return get_string('nosubmission', 'assignsubmission_vidtreo');
+        if (!$vidtreosubmission || empty($vidtreosubmission->recording_id)) {
+            // Detect context: grading interface vs student submission form
+            $context = $this->assignment->get_context();
+            
+            // If user has grading capability, they are in grading context
+            // Show "No se presentó nada" message
+            if (has_capability('mod/assign:grade', $context)) {
+                return get_string('nosubmission', 'assignsubmission_vidtreo');
+            }
+            
+            // Otherwise, user is in student submission form context
+            // Return empty string to avoid confusing message
+            return '';
         }
 
-        if (empty($vidtreosubmission->recording_id)) {
-            return get_string('nosubmission', 'assignsubmission_vidtreo');
-        }
-
-        // Show the video player directly in the grading interface
         $showviewlink = false;
 
-        $apikey = get_config('assignsubmission_vidtreo', 'apikey');
-        $backendurl = get_config('assignsubmission_vidtreo', 'backendurl');
-        $playercdnurl = get_config('assignsubmission_vidtreo', 'player_cdnurl');
+        $apikey       = get_config('local_vidtreo', 'apikey');
+        $backendurl   = get_config('local_vidtreo', 'backendurl');
+        $playercdnurl = get_config('local_vidtreo', 'player_cdnurl');
 
         if (empty($playercdnurl)) {
             $playercdnurl = 'https://cdn.jsdelivr.net/npm/@vidtreo/player-wc@latest/dist/vidtreo-player.js';
@@ -291,25 +296,25 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         }
 
         $templatecontext = [
-            'submission_id' => $submission->id,
-            'recording_id' => $vidtreosubmission->recording_id,
-            'duration' => $vidtreosubmission->duration ? $vidtreosubmission->duration : 0,
-            'status' => $vidtreosubmission->status,
-            'apikey' => $apikey,
-            'backendurl' => $backendurl,
+            'context_id'    => $submission->id,
+            'recording_id'  => $vidtreosubmission->recording_id,
+            'duration'      => $vidtreosubmission->duration ? $vidtreosubmission->duration : 0,
+            'status'        => $vidtreosubmission->status,
+            'apikey'        => $apikey,
+            'backendurl'    => $backendurl,
             'player_cdnurl' => $playercdnurl,
         ];
 
-        $renderer = $PAGE->get_renderer('assignsubmission_vidtreo');
+        $renderer = $PAGE->get_renderer('core');
         $output = $renderer->render_from_template(
-            'assignsubmission_vidtreo/player',
+            'local_vidtreo/player',
             $templatecontext
         );
 
         $PAGE->requires->js_call_amd(
-            'assignsubmission_vidtreo/player',
+            'local_vidtreo/player',
             'init',
-            [$submission->id, $playercdnurl]
+            [$submission->id, ['playerCdnUrl' => $playercdnurl, 'apiKey' => $apikey, 'backendUrl' => $backendurl]]
         );
 
         return $output;
@@ -332,9 +337,9 @@ class assign_submission_vidtreo extends assign_submission_plugin {
                    '</div>';
         }
 
-        $apikey = get_config('assignsubmission_vidtreo', 'apikey');
-        $backendurl = get_config('assignsubmission_vidtreo', 'backendurl');
-        $playercdnurl = get_config('assignsubmission_vidtreo', 'player_cdnurl');
+        $apikey       = get_config('local_vidtreo', 'apikey');
+        $backendurl   = get_config('local_vidtreo', 'backendurl');
+        $playercdnurl = get_config('local_vidtreo', 'player_cdnurl');
 
         if (empty($playercdnurl)) {
             $playercdnurl = 'https://cdn.jsdelivr.net/npm/@vidtreo/player-wc@latest/dist/vidtreo-player.js';
@@ -353,25 +358,25 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         }
 
         $templatecontext = [
-            'submission_id' => $submission->id,
-            'recording_id' => $vidtreosubmission->recording_id,
-            'duration' => $vidtreosubmission->duration ? $vidtreosubmission->duration : 0,
-            'status' => $vidtreosubmission->status,
-            'apikey' => $apikey,
-            'backendurl' => $backendurl,
+            'context_id'    => $submission->id,
+            'recording_id'  => $vidtreosubmission->recording_id,
+            'duration'      => $vidtreosubmission->duration ? $vidtreosubmission->duration : 0,
+            'status'        => $vidtreosubmission->status,
+            'apikey'        => $apikey,
+            'backendurl'    => $backendurl,
             'player_cdnurl' => $playercdnurl,
         ];
 
-        $renderer = $PAGE->get_renderer('assignsubmission_vidtreo');
+        $renderer = $PAGE->get_renderer('core');
         $output = $renderer->render_from_template(
-            'assignsubmission_vidtreo/player',
+            'local_vidtreo/player',
             $templatecontext
         );
 
         $PAGE->requires->js_call_amd(
-            'assignsubmission_vidtreo/player',
+            'local_vidtreo/player',
             'init',
-            [$submission->id, $playercdnurl]
+            [$submission->id, ['playerCdnUrl' => $playercdnurl, 'apiKey' => $apikey, 'backendUrl' => $backendurl]]
         );
 
         return $output;

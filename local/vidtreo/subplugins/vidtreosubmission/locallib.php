@@ -262,7 +262,18 @@ class assign_submission_vidtreo extends assign_submission_plugin {
         $vidtreosubmission = $this->get_vidtreo_submission($submission->id);
 
         if (!$vidtreosubmission || empty($vidtreosubmission->recording_id)) {
-            return get_string('nosubmission', 'assignsubmission_vidtreo');
+            // Detect context: grading interface vs student submission form
+            $context = $this->assignment->get_context();
+            
+            // If user has grading capability, they are in grading context
+            // Show "No se presentó nada" message
+            if (has_capability('mod/assign:grade', $context)) {
+                return get_string('nosubmission', 'assignsubmission_vidtreo');
+            }
+            
+            // Otherwise, user is in student submission form context
+            // Return empty string to avoid confusing message
+            return '';
         }
 
         $showviewlink = false;
